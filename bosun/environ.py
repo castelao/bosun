@@ -111,13 +111,15 @@ def load_configuration(yaml_string, kw=None):
 
 
 def update_model_type(environ):
-    from bosun import agcm, mom4, coupled
+    from bosun import agcm, mom4, mom5, coupled
 
     mtype = environ.get('type', None)
     if mtype == 'coupled':
         environ['model'] = coupled
     elif mtype == 'mom4p1_falsecoupled':
         environ['model'] = mom4
+    elif mtype == 'mom5_falsecoupled':
+        environ['model'] = mom5
     elif mtype == 'atmos':
         environ['model'] = agcm
     else:
