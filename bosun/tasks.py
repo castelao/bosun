@@ -68,6 +68,7 @@ def run_model(environ, **kwargs):
       check_status
       prepare_restart
     '''
+    import pdb; pdb.set_trace()
     print(fc.yellow('Running model'))
 
     begin = datetime.strptime(str(environ['restart']), "%Y%m%d%H")
@@ -230,8 +231,17 @@ def check_code(environ, **kwargs):
     if not exists(environ['code_dir']):
         print(fc.yellow("Creating new repository"))
         run(fmt('mkdir -p {code_dir}', environ))
-        run(fmt('hg clone {code_repo} {code_dir}', environ))
+        try:
+            run(fmt('hg clone {code_repo} {code_dir}', environ))
+        except:
+            with prefix('module load git'):
+                run(fmt('git clone {code_repo} {code_dir}', environ))
         changed = True
+
+    #!!!!ATENTION!!!!
+    print(fc.yellow("Sorry, I'll not update existing repository. Need to adapt to use git"))
+    changed = True
+    return changed
 
     with cd(environ['code_dir']):
         print(fc.yellow("Updating existing repository"))
