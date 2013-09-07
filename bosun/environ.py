@@ -118,7 +118,8 @@ def update_model_type(environ):
         environ['model'] = coupled
     elif mtype == 'mom4p1_falsecoupled':
         environ['model'] = mom4
-    elif mtype in ['mom5_falsecoupled', 'MOM_solo', 'MOM_SIS', 'CM2M', 'ESM2M', 'ICCM', 'EBM':
+    elif mtype in ['mom5_falsecoupled', 'MOM_solo', 'MOM_SIS',
+            'CM2M', 'ESM2M', 'ICCM', 'EBM']:
         environ['model'] = mom5
     elif mtype == 'atmos':
         environ['model'] = agcm
