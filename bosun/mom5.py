@@ -33,7 +33,10 @@ def prepare_workdir(environ, **kwargs):
     '''
     print(fc.yellow('Preparing workdir'))
     run(fmt('mkdir -p {workdir}', environ))
-    run(fmt('rsync -rtL --progress {workdir_template}/* {workdir}', environ))
+    if environ['workdir_template'][-7:] == '.tar.gz':
+        run(fmt('tar xzvf {workdir_template} -C {workdir} --strip-components 1', environ))
+    else:
+        run(fmt('rsync -rtL --progress {workdir_template}/* {workdir}', environ))
     run(fmt('touch {workdir}/time_stamp.restart', environ))
     # TODO: lots of things.
     #  1) generate atmos inputs (gdas_to_atmos from oper scripts)
