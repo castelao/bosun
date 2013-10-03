@@ -60,7 +60,7 @@ def prepare_expdir(environ, **kwargs):
         run(fmt('mkdir -p {execdir}/regrid_2d', environ))
         run(fmt('mkdir -p {regrid_2d_workdir}', environ))
     # Need to check if input.nml->ocean_drifters_nml->use_this_module is True
-    run(fmt('mkdir -p {workdir}/DRIFTERS', environ))
+    #run(fmt('mkdir -p {workdir}/DRIFTERS', environ))
 
 
 @task
@@ -152,16 +152,23 @@ def compile_model(environ, **kwargs):
 @task
 @env_options
 def compile_post(environ, **kwargs):
+    # Gui 20130901
+    # Looks like this is already done at MOM_compile.csh
+    return
     with shell_env(environ, keys=['root', 'platform']):
         with prefix(fmt('source {envconf}', environ)):
             with cd(environ['comb_exe']):
                 run(fmt('make -f {comb_src}/Make_combine', environ))
-    run(fmt('cp {root}/MOM4p1/src/shared/drifters/drifters_combine {comb_exe}/', environ))
+    #run(fmt('cp {root}/MOM4p1/src/shared/drifters/drifters_combine {comb_exe}/', environ))
 
 
 @task
 @env_options
 def compile_pre(environ, **kwargs):
+    # Gui 20130901
+    # Just to be able to reach the end.
+    # I'm not sure what to do here in respect to the MOM5
+    return
     with prefix(fmt('source {envconf}', environ)):
         if environ.get('gengrid_run_this_module', False):
             with shell_env(environ, keys=['root', 'platform', 'mkmf_template', 'executable_gengrid']):
@@ -292,6 +299,11 @@ def get_coupler_dates(environ):
 @task
 @env_options
 def check_restart(environ, **kwargs):
+    # Gui 20131015
+    # Without restart just to be able to run the test cases
+    # I need to return here and fix this.
+    return
+    import pdb; pdb.set_trace()
     prepare_restart(environ)
     if exists(fmt('{workdir}/INPUT/coupler.res', environ)):
         res_date, cmp_date = get_coupler_dates(environ)
@@ -333,6 +345,7 @@ def run_model(environ, **kwargs):
     Depends on:
       None
     '''
+    import pdb; pdb.set_trace()
     print(fc.yellow('Submitting ocean model'))
 
     # Here goes a series of tests and preparations moved out from the
@@ -369,8 +382,7 @@ def run_model(environ, **kwargs):
             with cd(fmt('{expdir}/runscripts', environ)):
                 if environ.get('run_drifters_pos', False):
                     run(fmt('. set_pos_drifters.cray', environ))
-                output = run(fmt('. run_g4c_model.cray {mode} {start} '
-                                 '{restart} {finish} {npes} {name}', environ))
+                output = run(fmt('qsub MOM_run.bash', environ))
     environ['JobID_model'] = re.search(
         ".*JobIDmodel:\s*(.*)\s*", output).groups()[0]
 
@@ -389,6 +401,7 @@ def run_post(environ, **kwargs):
     Depends on:
       None
     '''
+    import pdb; pdb.set_trace()
     print(fc.yellow('Submitting ocean post-processing'))
     opts = ''
     if environ['JobID_model']:
@@ -468,6 +481,7 @@ def archive(environ, **kwargs):
 @env_options
 def prepare_restart(environ, **kwargs):
     '''Prepare restart for new run'''
+    import pdb; pdb.set_trace()
 
     # TODO: check if it starts from zero (ocean forced)
 
