@@ -152,13 +152,12 @@ def compile_model(environ, **kwargs):
 @task
 @env_options
 def compile_post(environ, **kwargs):
-    # Gui 20130901
-    # Looks like this is already done at MOM_compile.csh
-    return
-    with shell_env(environ, keys=['root', 'platform']):
+    import pdb; pdb.set_trace()
+    with shell_env(environ, keys=['root', 'platform', 'code_dir', 'mppnccombine']):
         with prefix(fmt('source {envconf}', environ)):
             with cd(environ['comb_exe']):
-                run(fmt('make -f {comb_src}/Make_combine', environ))
+                #run(fmt('make -f {comb_src}/Make_combine', environ))
+                run(fmt('cc -V -O -o {mppnccombine} -I/usr/local/include -L/usr/local/lib {code_dir}/postprocessing/mppnccombine/mppnccombine.c -lnetcdf', environ))
     #run(fmt('cp {root}/MOM4p1/src/shared/drifters/drifters_combine {comb_exe}/', environ))
 
 
