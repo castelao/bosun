@@ -375,15 +375,18 @@ def run_model(environ, **kwargs):
 
     keys = ['workdir', 'platform', 'walltime', 'datatable', 'diagtable',
             'fieldtable', 'executable', 'mppnccombine', 'comb_exe',
-            'account']
+            'account', 'name', 'npes']
     with shell_env(environ, keys=keys):
         with prefix(fmt('source {envconf}', environ)):
             with cd(fmt('{expdir}/runscripts', environ)):
                 if environ.get('run_drifters_pos', False):
                     run(fmt('. set_pos_drifters.cray', environ))
-                output = run(fmt('qsub MOM_run.bash', environ))
-    environ['JobID_model'] = re.search(
-        ".*JobIDmodel:\s*(.*)\s*", output).groups()[0]
+                run(fmt('module list', environ))
+                output = run(fmt('qsub MOM_run.csh', environ))
+                #output = run(fmt('export JobIDmodel=`qsub MOM_run.csh`; echo "JobIDmodel: ${JobIDmodel}"', environ))
+    #environ['JobID_model'] = re.search(".*JobIDmodel:\s*(.*)\s*", output)
+    environ['JobID_model'] = re.search("(\d+\.eslogin\d+)",
+            output).groups()[0]
 
 
 @task
