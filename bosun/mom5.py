@@ -408,20 +408,30 @@ def run_post(environ, **kwargs):
     Depends on:
       None
     '''
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     print(fc.yellow('Submitting ocean post-processing'))
     opts = ''
     if environ['JobID_model']:
         opts = '-W depend=afterok:{JobID_model}'
-    with cd(fmt('{expdir}/runscripts', environ)):
-        out = run(fmt(
-            'qsub %s {workdir}/set_g4c_pos_m4g4.{platform}' % opts, environ))
-        environ['JobID_pos_ocean'] = out.split('\n')[-1]
+    out = run(fmt(
+        'qsub %s {workdir}/run_mom5_pos.{platform}' % opts, environ))
+    environ['JobID_pos_ocean'] = out.split('\n')[-1]
 
-        if environ.get('run_drifters_pos', False):
-            out = run(fmt('qsub %s {workdir}/run_pos_drifters.{platform}' %
-                      opts, environ))
-            environ['JobID_pos_ocean'] = out.split('\n')[-1]
+    #keys = ['workdir', 'platform']
+    #with shell_env(environ, keys=keys):
+    #    with prefix(fmt('source {envconf}', environ)):
+    #        with cd(fmt('{expdir}/runscripts', environ)):
+    #            run(fmt('module list', environ))
+    #            run(fmt('module load aux/1.0.0', environ))
+    #            run(fmt('module list', environ))
+    #            out = run(fmt(
+    #                'qsub %s {workdir}/run_mom5_pos.{platform}' % opts, environ))
+    #            environ['JobID_pos_ocean'] = out.split('\n')[-1]
+
+    #            if environ.get('run_drifters_pos', False):
+    #                out = run(fmt('qsub %s {workdir}/run_pos_drifters.{platform}' %
+    #                    opts, environ))
+                    #environ['JobID_pos_ocean'] = out.split('\n')[-1]
 
 
 @task
