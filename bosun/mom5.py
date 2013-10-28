@@ -39,6 +39,7 @@ def prepare_workdir(environ, **kwargs):
         run(fmt('rsync -rtL --progress {workdir_template}/* {workdir}', environ))
     run(fmt('touch {workdir}/time_stamp.restart', environ))
     # TODO: lots of things.
+    #  Gui, do not plan to implement option 1
     #  1) generate atmos inputs (gdas_to_atmos from oper scripts)
     #  2) copy restart files from somewhere (emanuel's spinup, for example)
 
@@ -302,7 +303,6 @@ def check_restart(environ, **kwargs):
     # Without restart just to be able to run the test cases
     # I need to return here and fix this.
     return
-    import pdb; pdb.set_trace()
     prepare_restart(environ)
     if exists(fmt('{workdir}/INPUT/coupler.res', environ)):
         res_date, cmp_date = get_coupler_dates(environ)
@@ -344,7 +344,6 @@ def run_model(environ, **kwargs):
     Depends on:
       None
     '''
-    import pdb; pdb.set_trace()
     print(fc.yellow('Submitting ocean model'))
 
     # Here goes a series of tests and preparations moved out from the
@@ -450,6 +449,8 @@ def check_status(environ, status):
 @task
 @env_options
 def archive(environ, **kwargs):
+    # Gui 20131028, not archiving while debuging.
+    return
     full_path, cname = hsm_full_path(environ)
 
     run('mkdir -p %s/ocean/%s' % (full_path, cname))
