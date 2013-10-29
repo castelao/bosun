@@ -406,8 +406,8 @@ def run_model(environ, **kwargs):
             with cd(fmt('{expdir}/runscripts', environ)):
                 if environ.get('run_drifters_pos', False):
                     run(fmt('. set_pos_drifters.cray', environ))
-                run(fmt('module list', environ))
-                output = run(fmt('qsub MOM_run.csh', environ))
+                #run(fmt('module list', environ))
+                output = run(fmt('. MOM_run.csh', environ))
                 #output = run(fmt('export JobIDmodel=`qsub MOM_run.csh`; echo "JobIDmodel: ${JobIDmodel}"', environ))
     #environ['JobID_model'] = re.search(".*JobIDmodel:\s*(.*)\s*", output)
     environ['JobID_model'] = re.search("(\d+\.eslogin\d+)",
