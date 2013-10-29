@@ -358,25 +358,45 @@ def run_model(environ, **kwargs):
     #   and this gives the error message, and do not stop here with the return.
     # Didn't understand.
 
-    #if not exists(fmt('{workdir}/INPUT', environ)):
-    #    print(fc.yellow(fmt("Missing the {workdir}/INPUT directory!", environ)))
-    #    return
-    #if not exists(fmt('{workdir}', environ)):
-    #    print(fc.yellow(fmt("Missing the {workdir} directory!", environ)))
-    #    run(fmt('mkdir -p {workdir}', environ))
-    #if not exists(fmt('{workdir}/RESTART', environ)):
-    #    print(fc.yellow(fmt("Missing the {workdir}/INPUT directory!", environ)))
-    #    run(fmt('mkdir -p {workdir}/RESTART', environ))
-    #if not exists(fmt('{workdir}/INPUT/grid_spec.nc', environ)):
-    #    print(fc.yellow(fmt("ERROR: required input file does not exist {workdir}/INPUT/grid_spec.nc", environ)))
-    #    return
-    #if not exists(fmt('{workdir}/INPUT/ocean_temp_salt.res.nc', environ)):
-    #    print(fc.yellow(fmt("ERROR: required input file does not exist {workdir}/INPUT/ocean_temp_salt.res.nc", environ)))
-    #    return
-    #run(fmt('cp {ocean_namelist} {workdir}/input.nml', environ))
-    #run(fmt('cp {datatable} {workdir}/data_table', environ))
-    #run(fmt('cp {diagtable} {workdir}/diag_table', environ))
-    #run(fmt('cp {fieldtable} {workdir}/field_table', environ))
+    # Probably the right way to do it is a function to check if a list of itens exists.
+    keys = ['workdir', 'datatable', 'diagtable', 'fieldtable', 'executable', 'mppnccombine', 'comb_exe', 'account', 'name', 'npes']
+    with shell_env(environ, keys=keys):
+        if not exists(fmt('{workdir}', environ)):
+            print(fc.yellow(fmt("Missing the {workdir} directory!", environ)))
+            return
+            #run(fmt('mkdir -p {workdir}', environ))
+        if not exists(fmt('{workdir}/INPUT', environ)):
+            print(fc.yellow(fmt("Missing the {workdir}/INPUT directory!", environ)))
+            return
+            #run(fmt('mkdir -p {workdir}/INPUT', environ))
+        if not exists(fmt('{workdir}/RESTART', environ)):
+            print(fc.yellow(fmt("Missing the {workdir}/RESTART directory!", environ)))
+            #return
+            run(fmt('mkdir -p {workdir}/RESTART', environ))
+        # input is copied with adjusts on some variables. Should not be copied here.
+        #run(fmt('cp {ocean_namelist} {workdir}/input.nml', environ))
+        run(fmt('cp {datatable} {workdir}/data_table', environ))
+        run(fmt('cp {diagtable} {workdir}/diag_table', environ))
+        run(fmt('cp {fieldtable} {workdir}/field_table', environ))
+
+        if not exists(fmt('{workdir}/INPUT/grid_spec.nc', environ)):
+            print(fc.yellow(fmt("ERROR: required input file does not exist {workdir}/INPUT/grid_spec.nc", environ)))
+            return
+        if not exists(fmt('{workdir}/INPUT/ocean_temp_salt.res.nc', environ)):
+            print(fc.yellow(fmt("ERROR: required input file does not exist {workdir}/INPUT/ocean_temp_salt.res.nc", environ)))
+            return
+
+        for f in ['{workdir}/input.nml', '{workdir}/data_table', '{workdir}/diag_table', '{workdir}/field_table']:
+            if not exists(fmt(f, environ)):
+                print(fc.yellow(fmt("ERROR: required input file does not exist: %s" % f, environ)))
+                return
+
+    # I should consider to create the MOM_run.csh on the fly and run in the sequence. I still don't have an opinion about the best way to do it, but I don't like to use this csh script to create the effective running scrpit. We don't need to be like that.
+    #import pdb; pdb.set_trace()
+    #input_file = StringIO()
+    #get(fmt('{expdir}/runscripts/MOM_run.csh', environ), input_file)
+    #put(fmt(input_file.getvalue(), environ), fmt('{workdir}/MOM_run.csh', environ))
+    #input_file.close()
 
     keys = ['workdir', 'platform', 'walltime', 'datatable', 'diagtable',
             'fieldtable', 'executable', 'mppnccombine', 'comb_exe',
