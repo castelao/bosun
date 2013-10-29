@@ -68,7 +68,6 @@ def run_model(environ, **kwargs):
       check_status
       prepare_restart
     '''
-    import pdb; pdb.set_trace()
     print(fc.yellow('Running model'))
 
     begin = datetime.strptime(str(environ['restart']), "%Y%m%d%H")
