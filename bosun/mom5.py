@@ -304,10 +304,6 @@ def get_coupler_dates(environ):
 @task
 @env_options
 def check_restart(environ, **kwargs):
-    # Gui 20131015
-    # Without restart just to be able to run the test cases
-    # I need to return here and fix this.
-    return
     prepare_restart(environ)
     if exists(fmt('{workdir}/INPUT/coupler.res', environ)):
         res_date, cmp_date = get_coupler_dates(environ)
