@@ -153,7 +153,6 @@ def compile_model(environ, **kwargs):
 @task
 @env_options
 def compile_post(environ, **kwargs):
-    #import pdb; pdb.set_trace()
     with shell_env(environ, keys=['root', 'platform', 'code_dir', 'mppnccombine', 'name']):
         with prefix(fmt('source {envconf}', environ)):
             with cd(environ['comb_exe']):
@@ -392,7 +391,6 @@ def run_model(environ, **kwargs):
                 return
 
     # I should consider to create the MOM_run.csh on the fly and run in the sequence. I still don't have an opinion about the best way to do it, but I don't like to use this csh script to create the effective running scrpit. We don't need to be like that.
-    #import pdb; pdb.set_trace()
     #input_file = StringIO()
     #get(fmt('{expdir}/runscripts/MOM_run.csh', environ), input_file)
     #put(fmt(input_file.getvalue(), environ), fmt('{workdir}/MOM_run.csh', environ))
@@ -428,7 +426,6 @@ def run_post(environ, **kwargs):
     Depends on:
       None
     '''
-    #import pdb; pdb.set_trace()
     print(fc.yellow('Submitting ocean post-processing'))
     opts = ''
     if environ['JobID_model']:
@@ -520,7 +517,6 @@ def archive(environ, **kwargs):
 @env_options
 def prepare_restart(environ, **kwargs):
     '''Prepare restart for new run'''
-    import pdb; pdb.set_trace()
 
     # TODO: check if it starts from zero (ocean forced)
 
