@@ -530,10 +530,11 @@ def prepare_restart(environ, **kwargs):
 @task
 @env_options
 def verify_run(environ, **kwargs):
+    # TODO: verify if was a natural end of run
+
     if 'cold' in environ['mode']:
         cmp_date = str(environ['start'])
     else:
         cmp_date = str(environ['restart'])
-    # Gui 20131028, it is not saving the fms.out. I don't know why, but need to fix it. Due that, the line below fail.
-    #run(fmt('grep "Total runtime" {workdir}/%s.fms.out' % cmp_date[:8], environ))
+    run(fmt('grep "Total runtime" {workdir}/%s.fms.out' % cmp_date[:8], environ))
     # TODO: need to check post processing!
