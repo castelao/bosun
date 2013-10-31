@@ -482,8 +482,6 @@ def check_status(environ, status):
 @task
 @env_options
 def archive(environ, **kwargs):
-    # Gui 20131028, not archiving while debuging.
-    return
     full_path, cname = hsm_full_path(environ)
 
     run('mkdir -p %s/ocean/%s' % (full_path, cname))
@@ -506,7 +504,9 @@ def archive(environ, **kwargs):
     run('mkdir -p %s/restart' % full_path)
     with cd(fmt('{workdir}/RESTART', environ)):
         # TODO: check date in coupler.res!
-        run(fmt('tar czvf {finish}.tar.gz coupler* ice* land* ocean*', environ))
+        # Gui 20131029, tar failled in a case where no land* file were available. I should think a more robust way to do this.
+        #run(fmt('tar czvf {finish}.tar.gz coupler* ice* land* ocean*', environ))
+        run(fmt('tar czvf {finish}.tar.gz *.res *res.nc', environ))
         run(fmt('mv {finish}.tar.gz %s/restart/' % full_path, environ))
     with cd(fmt('{workdir}', environ)):
         run(fmt('tar czvf INPUT.tar.gz INPUT/ --exclude="*.res*"', environ))
