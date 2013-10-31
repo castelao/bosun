@@ -92,7 +92,8 @@ def run_model(environ, **kwargs):
             environ['restart'] = period.strftime("%Y%m%d%H")
             environ['finish'] = finish.strftime("%Y%m%d%H")
 
-        environ['model'].check_restart(environ)
+        if period > begin:
+            environ['model'].check_restart(environ)
 
         # TODO: set months and days? only use days?
         if period.day == finish.day:
