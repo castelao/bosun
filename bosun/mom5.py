@@ -100,7 +100,8 @@ def prepare_namelist(environ, **kwargs):
             data[k].update([(ke, environ['ocean_namelist']['vars'][k][ke])
                             for ke in keys])
 
-    if data['coupler_nml'].get('concurrent', False):
+    if ('coupler_nml' in data) and \
+            data['coupler_nml'].get('concurrent', False):
         data['ocean_model_nml']['layout'] = ("%d,%d"
                                              % layout(data['coupler_nml']['ocean_npes']))
     else:
@@ -108,18 +109,25 @@ def prepare_namelist(environ, **kwargs):
                                              % layout(int(environ['npes'])))
 
     data['ocean_model_nml']['dt_ocean'] = environ['dt_ocean']
-    data['coupler_nml']['dt_atmos'] = environ['dt_atmos']
-    data['coupler_nml']['dt_cpld'] = environ['dt_cpld']
 
-    if 'days' in data['coupler_nml']:
-        data['coupler_nml'].pop('days')
-    if 'months' in data['coupler_nml']:
-        data['coupler_nml'].pop('months')
+    if environ['type'] != 'MOM_solo':
+        data['coupler_nml']['dt_atmos'] = environ['dt_atmos']
+        data['coupler_nml']['dt_cpld'] = environ['dt_cpld']
+
+    if environ['type'] == 'MOM_solo':
+        timing_ctrl_nml = 'ocean_solo_nml'
+    else:
+        timing_ctrl_nml = 'coupler_nml'
+
+    if 'days' in data[timing_ctrl_nml]:
+        data[timing_ctrl_nml].pop('days')
+    if 'months' in data[timing_ctrl_nml]:
+        data[timing_ctrl_nml].pop('months')
 
     if ('days' in environ) & ('months' not in environ):
-        data['coupler_nml']['days'] = environ['days']
+        data[timing_ctrl_nml]['days'] = environ['days']
     elif ('days' not in environ) & ('months' in environ):
-        data['coupler_nml']['months'] = environ['months']
+        data[timing_ctrl_nml]['months'] = environ['months']
     else:
         print "Error, one should use days or months, not both or none"
 
@@ -127,8 +135,15 @@ def prepare_namelist(environ, **kwargs):
         start = datetime.strptime(str(environ['restart']), "%Y%m%d%H")
     else:
         start = datetime.strptime(str(environ['start']), "%Y%m%d%H")
-    data['coupler_nml']['current_date'] = start.strftime(
-        "%Y, %m, %d, %H, 0, 0")
+
+    # Gui 20131101. MOM_solo do not recognize the current_date,
+    #   but needs to use date_init instead.
+    if environ['type'] == 'MOM_solo':
+        data[timing_ctrl_nml]['date_init'] = start.strftime(
+            "%Y, %m, %d, %H, 0, 0")
+    else:
+        data[timing_ctrl_nml]['current_date'] = start.strftime(
+            "%Y, %m, %d, %H, 0, 0")
 
     if 'ocean_drifters_nml' in data.keys():
         if data['ocean_drifters_nml']['use_this_module']:
