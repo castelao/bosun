@@ -231,9 +231,9 @@ def check_code(environ, **kwargs):
     if not exists(environ['code_dir']):
         print(fc.yellow("Creating new repository"))
         run(fmt('mkdir -p {code_dir}', environ))
-        try:
+        if exists(fmt('{code_repo}/.hg', environ)):
             run(fmt('hg clone {code_repo} {code_dir}', environ))
-        except:
+        else:
             with prefix('module load git'):
                 run(fmt('git clone {code_repo} {code_dir}', environ))
         changed = True
