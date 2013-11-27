@@ -158,7 +158,7 @@ def prepare_namelist(environ, **kwargs):
 @task
 @env_options
 def compile_model(environ, **kwargs):
-    keys = ['comp', 'code_dir', 'root', 'type', 'mkmf_template', 'executable']
+    keys = ['comp', 'code_dir', 'root', 'type', 'mkmfTemplate', 'executable']
     with shell_env(environ, keys=keys):
         with prefix(fmt('source {envconf}', environ)):
             with cd(fmt('{execdir}', environ)):
@@ -191,15 +191,15 @@ def compile_pre(environ, **kwargs):
     return
     with prefix(fmt('source {envconf}', environ)):
         if environ.get('gengrid_run_this_module', False):
-            with shell_env(environ, keys=['root', 'platform', 'mkmf_template', 'executable_gengrid']):
+            with shell_env(environ, keys=['root', 'platform', 'mkmfTemplate', 'executable_gengrid']):
                 with cd(fmt('{execdir}/gengrid', environ)):
                     run(fmt('/usr/bin/tcsh {gengrid_makeconf}', environ))
         if environ.get('regrid_3d_run_this_module', False):
-            with shell_env(environ, keys=['root', 'mkmf_template', 'executable_regrid_3d']):
+            with shell_env(environ, keys=['root', 'mkmfTemplate', 'executable_regrid_3d']):
                 with cd(fmt('{execdir}/regrid_3d', environ)):
                     run(fmt('/usr/bin/tcsh {regrid_3d_makeconf}', environ))
         if environ.get('regrid_2d_run_this_module', False):
-            with shell_env(environ, keys=['root', 'mkmf_template', 'executable_regrid_2d']):
+            with shell_env(environ, keys=['root', 'mkmfTemplate', 'executable_regrid_2d']):
                 with cd(fmt('{execdir}/regrid_2d', environ)):
                     run(fmt('/usr/bin/tcsh {regrid_2d_makeconf}', environ))
     if environ.get('make_xgrids_run_this_module', False):
