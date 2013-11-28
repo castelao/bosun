@@ -216,26 +216,26 @@ def check_code(environ, **kwargs):
       clean_checkout
       code_dir
       code_repo
-      code_dir
       code_branch
       revision
+      root
       executable
     '''
     print(fc.yellow("Checking code"))
 
     changed = False
     if environ['clean_checkout']:
-        run(fmt('rm -rf {code_dir}', environ))
+        run(fmt('rm -rf {root}', environ))
         changed = True
 
-    if not exists(environ['code_dir']):
+    if not exists(environ['root']):
         print(fc.yellow("Creating new repository"))
-        run(fmt('mkdir -p {code_dir}', environ))
+        run(fmt('mkdir -p {root}', environ))
         if exists(fmt('{code_repo}/.hg', environ)):
-            run(fmt('hg clone {code_repo} {code_dir}', environ))
+            run(fmt('hg clone {code_repo} {root}', environ))
         else:
             with prefix('module load git'):
-                run(fmt('git clone {code_repo} {code_dir}', environ))
+                run(fmt('git clone {code_repo} {root}', environ))
         changed = True
 
     #!!!!ATENTION!!!!
