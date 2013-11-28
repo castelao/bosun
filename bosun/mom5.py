@@ -409,7 +409,7 @@ def run_model(environ, **kwargs):
 
     keys = ['workdir', 'platform', 'walltime', 'datatable', 'diagtable',
             'fieldtable', 'executable', 'mppnccombine', 'comb_exe',
-            'account', 'name', 'npes']
+            'account', 'queue', 'name', 'npes']
     with shell_env(environ, keys=keys):
         with prefix(fmt('source {envconf}', environ)):
             with cd(fmt('{expdir}/runscripts', environ)):
