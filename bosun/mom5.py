@@ -369,7 +369,7 @@ def run_model(environ, **kwargs):
     # Didn't understand.
 
     # Probably the right way to do it is a function to check if a list of itens exists.
-    keys = ['workdir', 'datatable', 'diagtable', 'fieldtable', 'executable', 'mppnccombine', 'comb_exe', 'account', 'name', 'npes']
+    keys = ['workdir', 'datatable', 'diagtable', 'fieldtable', 'executable', 'mppnccombine', 'comb_exe', 'account', 'queue', 'name', 'npes']
     with shell_env(environ, keys=keys):
         if not exists(fmt('{workdir}', environ)):
             print(fc.yellow(fmt("Missing the {workdir} directory!", environ)))
