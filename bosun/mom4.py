@@ -456,7 +456,9 @@ def archive(environ, **kwargs):
     run('mkdir -p %s/restart' % full_path)
     with cd(fmt('{workdir}/RESTART', environ)):
         # TODO: check date in coupler.res!
-        run(fmt('tar czvf {finish}.tar.gz coupler* ice* land* ocean*', environ))
+        # !Temporary solution! It fails since there is no land*
+        #run(fmt('tar czvf {finish}.tar.gz coupler* ice* land* ocean*', environ))
+        run(fmt('tar czvf {finish}.tar.gz coupler* ice* ocean*', environ))
         run(fmt('mv {finish}.tar.gz %s/restart/' % full_path, environ))
     with cd(fmt('{workdir}', environ)):
         run(fmt('tar czvf INPUT.tar.gz INPUT/ --exclude="*.res*"', environ))
