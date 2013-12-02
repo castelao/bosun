@@ -177,7 +177,7 @@ def compile_post(environ, **kwargs):
         with prefix(fmt('source {envconf}', environ)):
             with cd(environ['comb_exe']):
                 #run(fmt('make -f {comb_src}/Make_combine', environ))
-                run(fmt('/scratchin/grupos/ocean/home/g.castelao/expgui.pgi/config/runscripts/set_mom5_pos.cray run {npes} {name}', environ))
+                run(fmt('{expdir}/runscripts/set_mom5_pos.cray run {npes} {name}', environ))
 
     #run(fmt('cp {root}/MOM4p1/src/shared/drifters/drifters_combine {comb_exe}/', environ))
 
