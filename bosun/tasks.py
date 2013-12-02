@@ -233,7 +233,7 @@ def check_code(environ, **kwargs):
         run(fmt('mkdir -p {root}', environ))
         if exists(fmt('{code_repo}/.hg', environ)):
             run(fmt('hg clone {code_repo} {root}', environ))
-        else:
+        elif exists(fmt('{code_repo}/.git', environ)):
             with prefix('module load git'):
                 run(fmt('git clone {code_repo} {root}', environ))
         changed = True
