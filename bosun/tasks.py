@@ -238,27 +238,26 @@ def check_code(environ, **kwargs):
                 run(fmt('git clone {code_repo} {root}', environ))
         changed = True
 
-    #!!!!ATENTION!!!!
-    print(fc.yellow("Sorry, I'll not update existing repository. Need to adapt to use git"))
-    changed = True
-    return changed
-
-    with cd(environ['code_dir']):
+    with cd(environ['root']):
         print(fc.yellow("Updating existing repository"))
 
         # First check if there is any change in repository, or
         # if requesting a different branch/revision
-        with settings(warn_only=True):
-            res = run(fmt('hg incoming -b {code_branch}', environ))
-        if res.return_code == 0:  # New changes!
-            run('hg pull')
-            changed = True
-        rev = environ.get('revision', None)
-        curr_rev = run('hg id -i').strip('+')
-        run(fmt('hg update {code_branch} --clean', environ))
-        if rev and rev != 'last' and rev != curr_rev:
-            run(fmt('hg update -r{revision}', environ))
-            changed = True
+        if exists(fmt('{root}/.hg', environ)):
+            with settings(warn_only=True):
+                res = run(fmt('hg incoming -b {code_branch}', environ))
+            if res.return_code == 0:  # New changes!
+                run('hg pull')
+                changed = True
+            rev = environ.get('revision', None)
+            curr_rev = run('hg id -i').strip('+')
+            run(fmt('hg update {code_branch} --clean', environ))
+            if rev and rev != 'last' and rev != curr_rev:
+                run(fmt('hg update -r{revision}', environ))
+                changed = True
+
+        elif exists(fmt('{root}/.git', environ)):
+            print(fc.yellow("Sorry, I'm not able to update an existing git repository."))
 
         # Need to check if executables exists!
         if not exists(environ['executable']):
