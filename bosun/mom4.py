@@ -307,6 +307,8 @@ def run_model(environ, **kwargs):
     ''' Submits ocean model
 
     Used vars:
+      account
+      queue
       workdir
       platform
       walltime
@@ -360,7 +362,7 @@ def run_model(environ, **kwargs):
 
     keys = ['workdir', 'platform', 'walltime', 'datatable', 'diagtable',
             'fieldtable', 'executable', 'mppnccombine', 'comb_exe',
-            'account']
+            'account', 'queue']
     with shell_env(environ, keys=keys):
         with prefix(fmt('source {envconf}', environ)):
             with cd(fmt('{expdir}/runscripts', environ)):
