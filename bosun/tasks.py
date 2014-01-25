@@ -258,6 +258,7 @@ def check_code(environ, **kwargs):
 
         elif exists(fmt('{root}/.git', environ)):
             print(fc.yellow("Sorry, I'm not able to update an existing git repository."))
+            changed = True
 
         # Need to check if executables exists!
         if not exists(environ['executable']):
