@@ -401,6 +401,10 @@ def run_model(environ, **kwargs):
                 print(fc.yellow(fmt("ERROR: required input file does not exist: %s" % f, environ)))
                 return
 
+        if not exists(fmt('{workdir}/run_mom5_pos.{platform}', environ)):
+            print(fc.yellow(fmt("ERROR: required pos processing script does not exist {workdir}/run_mom5_pos.{platform}", environ)))
+            return
+
     # I should consider to create the MOM_run.csh on the fly and run in the sequence. I still don't have an opinion about the best way to do it, but I don't like to use this csh script to create the effective running scrpit. We don't need to be like that.
     #input_file = StringIO()
     #get(fmt('{expdir}/runscripts/MOM_run.csh', environ), input_file)
