@@ -86,11 +86,14 @@ def run_model(environ, **kwargs):
             finish = end
 
         if environ['mode'] == 'cold':
-            environ['restart'] = finish.strftime("%Y%m%d%H")
+            environ['restart'] = "%04d%02d%02d%02d" % (finish.year,
+                    finish.month, finish.day,finish.hour)
             environ['finish'] = environ['restart']
         else:
-            environ['restart'] = period.strftime("%Y%m%d%H")
-            environ['finish'] = finish.strftime("%Y%m%d%H")
+            environ['restart'] = "%04d%02d%02d%02d" % (period.year,
+                    period.month, period.day,period.hour)
+            environ['finish'] = "%04d%02d%02d%02d" % (finish.year,
+                    finish.month, finish.day,finish.hour)
 
         if period > begin:
             environ['model'].check_restart(environ)

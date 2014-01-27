@@ -139,11 +139,13 @@ def prepare_namelist(environ, **kwargs):
     # Gui 20131101. MOM_solo do not recognize the current_date,
     #   but needs to use date_init instead.
     if environ['type'] == 'MOM_solo':
-        data[timing_ctrl_nml]['date_init'] = start.strftime(
-            "%Y, %m, %d, %H, 0, 0")
+        data[timing_ctrl_nml]['date_init'] = \
+                "%01d, %01d, %01d, %01d, 0, 0" % \
+                (start.year, start.month, start.day, start.hour)
     else:
-        data[timing_ctrl_nml]['current_date'] = start.strftime(
-            "%Y, %m, %d, %H, 0, 0")
+        data[timing_ctrl_nml]['current_date'] = \
+                "%01d, %01d, %01d, %01d, 0, 0" % \
+                (start.year, start.month, start.day, start.hour)
 
     if 'ocean_drifters_nml' in data.keys():
         if data['ocean_drifters_nml']['use_this_module']:
