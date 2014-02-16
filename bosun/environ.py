@@ -2,12 +2,12 @@
 
 import functools
 from copy import deepcopy
-import re
+import string
 from StringIO import StringIO
 
-from fabric.api import run, get, cd, prefix, hide
+from fabric.api import run, get, prefix, hide
 from fabric.contrib.files import exists
-import yaml
+import rec_env
 
 
 API_VERSION = 'v1'
@@ -53,7 +53,13 @@ def env_options(func):
             environ = {'exp_repo': exp_repo,
                        'name': name,
                        'expfiles': '${HOME}/.bosun_exps'}
-            environ = _expand_config_vars(environ)
+            missing_fmt=EnvVarFormatter()
+            environ = rec_env._expand_config_vars(environ,
+                                                  missing_fmt=missing_fmt)
+            # Temporary fix: new config format
+            # uses {} instead of ${} for variables
+            environ = _fix_environ(environ)
+
             with hide('running', 'stdout', 'stderr', 'warnings'):
                 if exists(fmt('{expfiles}', environ)):
                     run(fmt('rm -rf {expfiles}', environ))
@@ -67,20 +73,56 @@ def env_options(func):
                     temp_exp)
 
             kw['expfiles'] = environ['expfiles']
-            environ = load_configuration(temp_exp.getvalue(), kw)
+            environ = load_configuration(temp_exp.getvalue(), kw, missing_fmt)
             kw.pop('expfiles', None)
             kw.pop('name', None)
             kw.pop('exp_repo', None)
             temp_exp.close()
+            environ = _fix_environ(environ)
 
         return func(environ, **kw)
 
     return functools.update_wrapper(_wrapped_env, func)
 
 
-def load_configuration(yaml_string, kw=None):
-    environ = yaml.safe_load(yaml_string)
-    environ = _expand_config_vars(environ, updates=kw)
+class EnvVarFormatter(string.Formatter):
+    env_vars = {}
+
+    def get_value(self, key, args, kwargs):
+        try:
+            if hasattr(key, "mod"):
+                return args[key]
+            else:
+                return kwargs[key]
+        except:
+            if not self.env_vars:
+                with hide('running', 'stdout', 'stderr', 'warnings'):
+                    env_output = run('env')
+                    for line in env_output.split('\n'):
+                        try:
+                            k, v = line.split('=')
+                        except:
+                            pass
+                        else:
+                            self.env_vars[k] = v.rstrip()
+
+            return self.env_vars[key]
+
+
+def _fix_environ(environ):
+    for k in environ:
+        try:
+            environ[k] = environ[k].replace('$', '')
+        except:
+            if isinstance(environ[k], dict):
+                _fix_environ(environ[k])
+            else:
+                pass
+    return environ
+
+
+def load_configuration(yaml_string, kw=None, missing_fmt=None):
+    environ = rec_env.load_configuration(yaml_string, kw, missing_fmt)
     environ = update_model_type(environ)
 
     #if environ.get('API', 0) != API_VERSION:
@@ -90,22 +132,19 @@ def load_configuration(yaml_string, kw=None):
     #    report_differences(environ, ref)
     #    raise APIVersionException
 
-    if environ is None:
-        raise NoEnvironmentSetException
-    else:
-        if environ.get('ensemble', False):
-            environs = []
-            ensemble = environ['ensemble']
-            environ.pop('ensemble')
-            for member in ensemble.keys():
-                new_env = update_environ(environ, ensemble, member)
-                new_env = update_model_type(environ)
-                environs.append(new_env)
+    if 'ensemble' in environ:
+        environs = []
+        ensemble = environ['ensemble']
+        environ.pop('ensemble')
+        for member in ensemble.keys():
+            new_env = update_environ(environ, ensemble, member)
+            new_env = update_model_type(environ)
+            environs.append(new_env)
 
-            # TODO: ignoring for now, but need to think on how to run
-            # multiple environs (one for each ensemble member).
-            # Maybe use the Fabric JobQueue, which abstracts
-            # multiprocessing?
+        # TODO: ignoring for now, but need to think on how to run
+        # multiple environs (one for each ensemble member).
+        # Maybe use the Fabric JobQueue, which abstracts
+        # multiprocessing?
 
     return environ
 
@@ -185,71 +224,6 @@ def shell_env(environ, keys=None):
                          for (key, value) in environ.items()
                          if key in valid])
     return prefix("export %s" % env_vars)
-
-
-def _expand_config_vars(d, updates=None):
-
-    env_vars = {}
-
-    def rec_replace(env, value):
-        finder = re.compile('\$\{(\w*)\}')
-        ret_value = value
-
-        try:
-            keys = finder.findall(value)
-        except TypeError:
-            return value
-
-        for k in keys:
-            if k in env:
-                out = env[k]
-            else:
-                if k not in env_vars:
-                    with hide('running', 'stdout', 'stderr', 'warnings'):
-                        var = run('if [ "${%s}" ]; then echo "${%s}"; else exit -1; fi' % (k, k)).split('\n')[-1]
-                        env_vars[k] = var
-                out = env_vars[k]
-
-            ret_value = rec_replace(env, ret_value.replace('${%s}' % k, out))
-
-        return ret_value
-
-    def env_replace(old_env, ref=None):
-        new_env = {}
-        for k in old_env.keys():
-            try:
-                # tests if value is a string
-                old_env[k].split(' ')
-            except AttributeError:
-                # if it's not a string, let's test if it is a dict
-                try:
-                    old_env[k].keys()
-                except AttributeError:
-                    # if it's not, just set new_env with it
-                    new_env[k] = old_env[k]
-                else:
-                    # Yup, a dict. Need to replace recursively too.
-                    all_data = dict(old_env)
-                    if ref:
-                        all_data.update(ref)
-                    new_env[k] = env_replace(old_env[k], all_data)
-            else:
-                # if it is, check if we can substitute for booleans
-                if old_env[k].lower() == 'false':
-                    new_env[k] = False
-                elif old_env[k].lower() == 'true':
-                    new_env[k] = True
-                else:
-                    # else start replacing vars
-                    new_env[k] = rec_replace(ref if ref else old_env,
-                                             old_env[k])
-        return new_env
-
-    if updates:
-        d.update(updates)
-    new_d = env_replace(d)
-
-    return new_d
 
 
 def fmt(string, environ):
