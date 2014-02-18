@@ -114,8 +114,8 @@ def restart(environ, **kwargs):
 def generate_grid(environ, **kwargs):
     tasks.prepare_expdir(environ)
     tasks.check_code(environ)
-    mom4.compile_pre(environ)
-    mom4.generate_grid(environ)
+    environ['model'].compile_pre(environ)
+    environ['model'].generate_grid(environ)
 
 
 @task
