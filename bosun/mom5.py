@@ -216,11 +216,11 @@ def fix_MAXLOCAL_make_xgrids(environ):
 def generate_grid(environ, **kwargs):
     run(fmt('cp {topog_file} {gengrid_workdir}/topog_file.nc', environ))
     with shell_env(
-        environ, keys=['mom4_pre_npes', 'mom4_pre_walltime', 'RUNTM',
+        environ, keys=['mom_pre_npes', 'mom_pre_walltime', 'RUNTM',
                        'executable_gengrid', 'gengrid_workdir',
-                       'account', 'topog_file', 'platform']):
+                       'account', 'topog_file', 'platform', 'queue']):
         with prefix(fmt('source {envconf}', environ)):
-            with cd(fmt('{expdir}/runscripts/mom4_pre', environ)):
+            with cd(fmt('{expdir}/runscripts/preprocessing', environ)):
                 out = run(fmt('/usr/bin/tcsh ocean_grid_run.csh', environ))
 
 
