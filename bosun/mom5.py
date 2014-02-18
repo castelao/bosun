@@ -187,10 +187,6 @@ def compile_post(environ, **kwargs):
 @task
 @env_options
 def compile_pre(environ, **kwargs):
-    # Gui 20130901
-    # Just to be able to reach the end.
-    # I'm not sure what to do here in respect to the MOM5
-    return
     with prefix(fmt('source {envconf}', environ)):
         if environ.get('gengrid_run_this_module', False):
             with shell_env(environ, keys=['root', 'platform', 'mkmfTemplate', 'executable_gengrid']):
