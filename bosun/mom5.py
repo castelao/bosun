@@ -200,6 +200,10 @@ def compile_pre(environ, **kwargs):
             with shell_env(environ, keys=['root', 'mkmfTemplate', 'executable_regrid_2d']):
                 with cd(fmt('{execdir}/regrid_2d', environ)):
                     run(fmt('/usr/bin/tcsh {regrid_2d_makeconf}', environ))
+    # Gui 20140219
+    # I know it's a one line code deal, but is it the best way to do to
+    #   compile the xgrids here? To keep consistency, shouldn't it be
+    #   at make_xgrid_compile.csh?
     if environ.get('make_xgrids_run_this_module', False):
         with prefix(fmt('source {make_xgrids_envconf}', environ)):
             #run(fmt('cc -g -V -O -o {executable_make_xgrids} {make_xgrids_src} -I $NETCDF_DIR/include -L $NETCDF_DIR/lib -lnetcdf -lm -Duse_LARGEFILE -Duse_netCDF -DLARGE_FILE -Duse_libMPI', environ))
