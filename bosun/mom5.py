@@ -502,7 +502,9 @@ def archive(environ, **kwargs):
     full_path, cname = hsm_full_path(environ)
 
     run('mkdir -p %s/ocean/%s' % (full_path, cname))
-    # TODO: copy OGCM output ({workdir}/dataout)
+    outfiles = run(fmt('ls -1 {workdir}/dataout/*nc', environ))
+    for f in outfiles.splitlines():
+        run(fmt('mv %s %s/ocean/%s/' % (f, full_path, cname), environ))
 
     run('mkdir -p %s/output' % full_path)
     with cd(fmt('{workdir}', environ)):
