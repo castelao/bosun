@@ -17,7 +17,7 @@ requires = [
 
 setup(
     name='bosun',
-    version='1.0.5',
+    version='1.0.6',
     url='https://github.com/luizirber/bosun',
     download_url='https://github.com/luizirber/bosun',
     license='PSF',
