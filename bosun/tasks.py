@@ -249,12 +249,15 @@ def check_code(environ, **kwargs):
         if exists(fmt('{root}/.git', environ)):
             with settings(warn_only=True):
                 localver = run(fmt('git rev-list --max-count=1 {code_branch}', environ))
-                remver = run(fmt('git ls-remote origin -h refs/heads/{code_branch} | cut -f1', environ))
+                if environ['revision'] == 'last':
+                    remver = run(fmt('git ls-remote origin -h refs/heads/{code_branch} | cut -f1', environ))
+                else:
+                    remver = environ['revision']
                 if localver != remver:
                     print(fc.yellow("Yooh! The code is outdated. I'll take care of it."))
-                    # It's missing the change to code_branch. Would work?:
-                    # git fetch && git checkout {code_branch}
+                    run(fmt('git fetch && git checkout {code_branch}', environ))
                     run('git pull')
+                    run('git reset --hard %s' % remver)
                     changed = True
 
         elif exists(fmt('{root}/.hg', environ)):
