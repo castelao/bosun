@@ -34,3 +34,21 @@ def qstat(job_id):
             header = header.replace('Time', 'TimeElap')
 
     return statuses
+
+
+def extract_timestep_progress(logfile):
+    """
+
+        ATENTION, must migrate from popen to subprocess
+    """
+    line = os.popen('tac %s | grep -m1 yyyy' % logfile).read()
+    #line = subprocess.check_output('tac %s | grep -m1 yyyy' % logfile)
+    line = line.splitlines()[-1]
+
+    current = re.search('(\d{4})/(\s*\d{1,2})/(\s*\d{1,2})\s(\s*'
+            '\d{1,2}):(\s*\d{1,2}):(\s*\d{1,2})', line)
+
+    if current:
+        current = datetime(*[int(i) for i in current.groups()])
+
+    return current
