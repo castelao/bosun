@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import os
+import subprocess
+import re
+from datetime import datetime
 
 def qstat(job_id):
     """
@@ -12,7 +15,7 @@ def qstat(job_id):
           both be just Time, therefore only the last value is saved. For
           now it's sufficient since I really want the Elap Time.
     """
-    data = os.popen("qstat -a %s" % job_id).read()
+    data = subprocess.check_output(['qstat', '-a', job_id])
 
     statuses = {}
     header = None
