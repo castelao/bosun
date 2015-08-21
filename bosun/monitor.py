@@ -5,9 +5,6 @@ import os
 def qstat(job_id):
     data = os.popen("qstat -a %s" % job_id).read()
 
-    if data == '':
-        return
-
     statuses = {}
     header = None
     for line in data.split('\n'):
