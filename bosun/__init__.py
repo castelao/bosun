@@ -112,7 +112,11 @@ def restart(environ, **kwargs):
 @task
 @env_options
 def generate_grid(environ, **kwargs):
-    tasks.prepare_expdir(environ)
+    # tasks.prepare_expdir(environ)
+    # just mom5.prepare_expdir is not enough, but it's not necessary to
+    #   extract the whole experiment's INPUT to generate the grid.
+    #environ['model'].prepare_expdir(environ)
+    prepare(environ)
     tasks.check_code(environ)
     environ['model'].compile_pre(environ)
     environ['model'].generate_grid(environ)
