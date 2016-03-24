@@ -386,7 +386,6 @@ def run_model(environ, **kwargs):
             #return
             run(fmt('mkdir -p {workdir}/RESTART', environ))
         # input is copied with adjusts on some variables. Should not be copied here.
-        #run(fmt('cp {ocean_namelist} {workdir}/input.nml', environ))
         run(fmt('cp {datatable} {workdir}/data_table', environ))
         run(fmt('cp {diagtable} {workdir}/diag_table', environ))
         run(fmt('cp {fieldtable} {workdir}/field_table', environ))
