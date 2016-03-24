@@ -52,3 +52,18 @@ def extract_timestep_progress(logfile):
         current = datetime(*[int(i) for i in current.groups()])
 
     return current
+
+
+def check_status(job_id, logfile):
+    for i in range(3):
+        print check_status(job_id)
+        print "Status: %s" % status['S']
+        if status['S'] == 'R':
+            print qstat(job_id)
+        import time; time.sleep(5)
+
+
+job_id = '5207569.eslogin13'
+logfile = '/stornext/home/fps7.guilherme/19800101.fms.out'
+#print extract_timestep_progress('/stornext/home/fps7.guilherme/19800101.fms.out')
+print check_status('5207569.eslogin13')
