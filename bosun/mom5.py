@@ -52,7 +52,7 @@ def prepare_expdir(environ, **kwargs):
         run(fmt('mkdir -p {execdir}/gengrid', environ))
         run(fmt('mkdir -p {gengrid_workdir}', environ))
     if environ.get('make_xgrids_run_this_module', False):
-        run(fmt('mkdir -p {execdir}/gengrid', environ))
+        run(fmt('mkdir -p {execdir}/make_xgrids', environ))
         run(fmt('mkdir -p {make_xgrids_workdir}', environ))
     if environ.get('regrid_3d_run_this_module', False):
         run(fmt('mkdir -p {execdir}/regrid_3d', environ))
