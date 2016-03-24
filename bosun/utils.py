@@ -95,6 +95,8 @@ def hsm_full_path(environ):
         cname = 'OGCM'
     elif environ['type'] == 'coupled':
         cname = 'CGCM'
+    elif environ['type'] in ['MOM_solo', 'MOM_SIS', 'CM2M', 'ESM2M', 'ICCM', 'EBM']:
+        cname = 'OGCM'
     else:
         cname = 'GENERIC'
 
