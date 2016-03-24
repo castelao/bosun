@@ -14,3 +14,9 @@ I'll list here to keep track what is necessary
 
     When tot_sum period is not coherent with the restart block period (smaller
     or bigger), how it is generated? Throw a warning? 
+
+- input.nml
+
+    - Need to set one of them to true: eos_linear, eos_preteos10, eos_teso10.
+
+    barotropic_time_stepping_A = F & barotropic_time_stepping_B = T when using Open Boundary Conditions
