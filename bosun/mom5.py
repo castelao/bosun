@@ -175,7 +175,7 @@ def compile_post(environ, **kwargs):
             with cd(environ['comb_exe']):
                 #run(fmt('make -f {comb_src}/Make_combine', environ))
                 run(fmt('cc -V -O -o {mppnccombine} -I/usr/local/include -L/usr/local/lib {code_dir}/postprocessing/mppnccombine/mppnccombine.c -lnetcdf', environ))
-    with shell_env(environ, keys=['workdir', 'platform', 'npes', 'mppnccombine']):
+    with shell_env(environ, keys=['workdir', 'expdir', 'platform', 'npes', 'mppnccombine']):
         with prefix(fmt('source {envconf}', environ)):
             with cd(environ['comb_exe']):
                 #run(fmt('make -f {comb_src}/Make_combine', environ))
@@ -402,8 +402,8 @@ def run_model(environ, **kwargs):
                 print(fc.yellow(fmt("ERROR: required input file does not exist: %s" % f, environ)))
                 return
 
-        if not exists(fmt('{workdir}/run_mom5_pos.{platform}', environ)):
-            print(fc.yellow(fmt("ERROR: required pos processing script does not exist {workdir}/run_mom5_pos.{platform}", environ)))
+        if not exists(fmt('{expdir}/runscripts/run_mom5_pos.{platform}', environ)):
+            print(fc.yellow(fmt("ERROR: required pos processing script does not exist {expdir}/runscripts/run_mom5_pos.{platform}", environ)))
             return
 
     # I should consider to create the MOM_run.csh on the fly and run in the sequence. I still don't have an opinion about the best way to do it, but I don't like to use this csh script to create the effective running scrpit. We don't need to be like that.
@@ -447,7 +447,7 @@ def run_post(environ, **kwargs):
     if environ['JobID_model']:
         opts = '-W depend=afterok:{JobID_model}'
     out = run(fmt(
-        'qsub %s {workdir}/run_mom5_pos.{platform}' % opts, environ))
+        'qsub %s {expdir}/runscripts/run_mom5_pos.{platform}' % opts, environ))
     environ['JobID_pos_ocean'] = out.split('\n')[-1]
 
     #keys = ['workdir', 'platform']
