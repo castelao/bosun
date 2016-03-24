@@ -234,11 +234,19 @@ def check_code(environ, **kwargs):
     if not exists(environ['root']):
         print(fc.yellow("Creating new repository"))
         run(fmt('mkdir -p {root}', environ))
-        if exists(fmt('{code_repo}/.hg', environ)):
-            run(fmt('hg clone {code_repo} {root}', environ))
-        elif exists(fmt('{code_repo}/.git', environ)):
+        # First try to clone model's source code with git
+        try:
             with prefix('module load git'):
                 run(fmt('git clone {code_repo} {root}', environ))
+        except:
+            # Otherwise try to clone with Hg
+            try:
+                run(fmt('hg clone {code_repo} {root}', environ))
+            except:
+                # Otherwise fail
+                print(fc.red('ERROR! Couldn\'t clone model source code'))
+                sys.exit(1)
+
         changed = True
 
     with cd(environ['root']):
