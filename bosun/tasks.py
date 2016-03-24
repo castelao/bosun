@@ -254,7 +254,21 @@ def check_code(environ, **kwargs):
 
         # First check if there is any change in repository, or
         # if requesting a different branch/revision
-        if exists(fmt('{root}/.hg', environ)):
+        if exists(fmt('{root}/.git', environ)):
+            with settings(warn_only=True):
+                localver = run(fmt('git rev-list --max-count=1 {code_branch}', environ))
+                if environ['revision'] == 'last':
+                    remver = run(fmt('git ls-remote origin -h refs/heads/{code_branch} | cut -f1', environ))
+                else:
+                    remver = environ['revision']
+                if localver != remver:
+                    print(fc.yellow("Yooh! The code is outdated. I'll take care of it."))
+                    run(fmt('git fetch && git checkout {code_branch}', environ))
+                    run('git pull')
+                    run('git reset --hard %s' % remver)
+                    changed = True
+
+        elif exists(fmt('{root}/.hg', environ)):
             with settings(warn_only=True):
                 res = run(fmt('hg incoming -b {code_branch}', environ))
             if res.return_code == 0:  # New changes!
@@ -266,10 +280,6 @@ def check_code(environ, **kwargs):
             if rev and rev != 'last' and rev != curr_rev:
                 run(fmt('hg update -r{revision}', environ))
                 changed = True
-
-        elif exists(fmt('{root}/.git', environ)):
-            print(fc.yellow("Sorry, I'm not able to update an existing git repository."))
-            changed = True
 
         # Need to check if executables exists!
         if not exists(environ['executable']):
